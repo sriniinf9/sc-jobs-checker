@@ -44,7 +44,7 @@ from bs4 import BeautifulSoup
 CONFIG = {
     "email_from":     os.getenv("EMAIL_FROM",     "your_gmail@gmail.com"),
     "email_password": os.getenv("EMAIL_PASSWORD", "your_app_password_here"),
-    "email_to":       os.getenv("EMAIL_TO",       "vasur28@gmail.com"),
+    "email_to":       os.getenv("EMAIL_TO",       "vasur27@gmail.com"),
     "smtp_host":      "smtp.gmail.com",
     "smtp_port":      587,
     "seen_jobs_file": Path.home() / ".sc_jobs_seen.json",
