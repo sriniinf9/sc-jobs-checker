@@ -573,6 +573,21 @@ def run_job(slot: str):
 
 # ─── SCHEDULER ───────────────────────────────────────────────────────────────
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--run-now", metavar="SLOT", nargs="?", const="auto",
+                        help="Run once immediately (for GitHub Actions). "
+                             "Pass '11:30 AM' or '4:30 PM', or omit for auto-detect.")
+    args = parser.parse_args()
+
+    if args.run_now is not None:
+        slot = args.run_now
+        if slot == "auto":
+            hour = datetime.now().hour
+            slot = "11:30 AM" if hour < 14 else "4:30 PM"
+        run_job(slot)
+        return
+
     log.info("SC Jobs Checker starting...")
     log.info(f"Email from: {CONFIG['email_from']}")
     log.info(f"Email to:   {CONFIG['email_to']}")
@@ -581,9 +596,6 @@ def main():
 
     schedule.every().day.at("11:30").do(run_job, slot="11:30 AM")
     schedule.every().day.at("16:30").do(run_job, slot="4:30 PM")
-
-    # Optional: run immediately on startup to verify email works
-    # run_job("Startup Test")
 
     log.info("Scheduler running. Press Ctrl+C to stop.")
     while True:

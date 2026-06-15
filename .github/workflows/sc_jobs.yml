@@ -1,0 +1,35 @@
+name: SC Jobs Checker
+
+on:
+  schedule:
+    - cron: '30 10 * * 1-5'   # 11:30 AM BST (10:30 UTC) Mon–Fri
+    - cron: '30 15 * * 1-5'   # 4:30 PM BST (15:30 UTC) Mon–Fri
+  workflow_dispatch:            # allow manual run from GitHub UI
+
+jobs:
+  check-jobs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Restore seen-jobs cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.sc_jobs_seen.json
+          key: sc-jobs-seen-${{ github.run_id }}
+          restore-keys: sc-jobs-seen-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run job checker
+        run: python sc_jobs_checker.py --run-now auto
+        env:
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
